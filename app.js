@@ -1,13 +1,13 @@
 
 // BUDGET CONTROLLER
-var budgetController = (function(){
+var budgetController = (function () {
 
 
 
 })();
 
 // UI CONTROLLER
-var UIController = (function(){
+var UIController = (function () {
 
     // DOMstrings to reduce typing
     var DOMstrings = {
@@ -19,16 +19,16 @@ var UIController = (function(){
 
     // SOME CODE
     return {
-        getInput: function(){
-            
+        getInput: function () {
+
             return {
-            type: document.querySelector(DOMstrings.inputType).value,
-            description: document.querySelector(DOMstrings.inputDescription).value,
-            value: document.querySelector(DOMstrings.inputValue).value
+                type: document.querySelector(DOMstrings.inputType).value,
+                description: document.querySelector(DOMstrings.inputDescription).value,
+                value: document.querySelector(DOMstrings.inputValue).value
             }
-            
+
         },
-        getDOMStrings: function(){
+        getDOMStrings: function () {
             return DOMstrings;
         }
     };
@@ -36,13 +36,31 @@ var UIController = (function(){
 })();
 
 // GLOBAL APP CONTROLLER
-var controller = (function(budgetCtrl, UICtrl){
+var controller = (function (budgetCtrl, UICtrl) {
 
-    var DOM = UICtrl.getDOMStrings();
+    var setupEventListeners = function () {
 
-    var ctrlAddItem = function(){
+        // GET DOM CONSTANTS
+        var DOM = UICtrl.getDOMStrings();
 
-          
+        // BUTTON EVENT LISTENER
+        document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
+
+        // KEYPRESS EVENT LISTENER
+        document.addEventListener('keypress', function (e) {
+
+            if (e.keyCode === 13 || event.which === 13) {
+                ctrlAddItem();
+            }
+
+        });
+
+    };
+
+
+    var ctrlAddItem = function () {
+
+
         // GET VALUES
         var input = UICtrl.getInput();
         console.log(input);
@@ -58,14 +76,6 @@ var controller = (function(budgetCtrl, UICtrl){
 
     };
 
-    document.querySelector(DOM.inputButton).addEventListener('click',ctrlAddItem);
 
-    document.addEventListener('keypress',function(e){       
-
-        if(e.keyCode === 13 || event.which === 13){
-            ctrlAddItem();            
-        }
-
-    })
 
 })(budgetController, UIController);
