@@ -14,6 +14,18 @@ var budgetController = (function () {
         this.value = value;
     };
 
+    var calculateTotal = function(type){
+
+        var total = 0;
+
+        data.allItems[type].forEach(function(val){
+            total += val.value;
+        })
+
+        data.totals[type] = total;
+
+    }
+
     var data = {
         allItems: {
             exp: [],
@@ -22,7 +34,9 @@ var budgetController = (function () {
         totals: {
             exp: 0,
             inc: 0
-        }
+        },
+        budget: 0,
+        percentage: -1
     }
 
     return {
@@ -47,6 +61,27 @@ var budgetController = (function () {
             // PUSH IT TO ARRAY AND RETURN
             data.allItems[type].push(newItem);
             return newItem;
+        },
+        calculateBudget: function(){
+
+            // CALC INCOME AND EXPENSES
+            calculateTotal('exp');
+            calculateTotal('inc');
+
+            // CALC BUDGET
+            data.budget = data.totals.inc - data.totals.exp;
+
+            // CALC PERCENTAGES
+            data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+
+        },
+        getBudget: function(){
+            return {
+                budget: data.budget,
+                totalInc: data.totals.inc,
+                totalExp: data.totals.exp,
+                percentage: data.percentage
+            }
         },
         testing: function () {
             console.log(data);
@@ -149,8 +184,12 @@ var controller = (function (budgetCtrl, UICtrl) {
     var updateBudget = function() {
 
         // CALC BUDGET
+        budgetCtrl.calculateBudget();
 
         /// RETURN BUDGET
+        var budget = budgetCtrl.getBudget();
+
+        console.log(budget);
 
         // DISPLAY ON UI
     };
@@ -171,6 +210,8 @@ var controller = (function (budgetCtrl, UICtrl) {
 
         // CLEAR FIELDS
         UICtrl.clearFields();
+
+        updateBudget();
 
         }
 
@@ -194,4 +235,5 @@ var controller = (function (budgetCtrl, UICtrl) {
 })(budgetController, UIController);
 
 // INITIALIZE THE APP
+
 controller.init();
