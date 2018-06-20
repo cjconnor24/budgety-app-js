@@ -202,7 +202,7 @@ var controller = (function (budgetCtrl, UICtrl) {
 
         });
 
-        document.querySelector(DOM.container).addEventListener('click',ctrlDeleteItem)
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem)
 
     };
 
@@ -251,13 +251,19 @@ var controller = (function (budgetCtrl, UICtrl) {
 
     };
 
-    var ctrlDeleteItem = function(event) {
+    var ctrlDeleteItem = function (event) {
 
     };
 
     return {
         init: function () {
             console.log("THE APPLICATION HAS STARTED");
+            UICtrl.displayBudget({
+                budget: 0,
+                totalInc: 0,
+                totalExp: 0,
+                percentage: 0
+            });
             setupEventListeners();
         }
     }
