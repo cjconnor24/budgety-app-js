@@ -164,6 +164,26 @@ var UIController = (function () {
         expensesPercLabel: ".item__percentage"
     }
 
+    var formatNumber = function (num, type) {
+
+        var type;
+
+        num = Math.abs(num);
+        num = num.toFixed(2);
+
+        var numSplit = num.split('.');
+
+        var int = numSplit[0];
+        var dec = numSplit[1];
+        if (int.length > 3) {
+            int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, int.length);
+        }
+
+        return (type === 'exp' ? sign = '-' : sign = '+') + ' ' + int + '.' + dec;
+
+
+    };
+
     // SOME CODE
     return {
         getInput: function () {
@@ -191,7 +211,7 @@ var UIController = (function () {
             // CREATE THE NEW PARSED STRING
             parsedHTML = html.replace('%id%', obj.id)
                 .replace('%description%', obj.description)
-                .replace('%value%', obj.value);
+                .replace('%value%', formatNumber(obj.value,type));
 
             // INSERT INTO THE DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', parsedHTML);
@@ -205,9 +225,12 @@ var UIController = (function () {
         },
         displayBudget: function (obj) {
 
-            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
-            document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
+            var type;
+            obj.budget > 0 ? type = 'inc' : type= 'exp';
+
+            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+            document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc,'inc');
+            document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp,'exp');
             // document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage;
 
             if (obj.percentage > 0) {
@@ -237,6 +260,7 @@ var UIController = (function () {
 
             var fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
 
+            // TODO: RESEARCH THIS METHOD MORE AND FIND OUT WHATS GOING ON. FIRST CLASS FUNCTIONS?
             var nodeListForEach = function (list, callback) {
                 for (var i = 0; i < list.length; i++) {
                     callback(list[i], i);
