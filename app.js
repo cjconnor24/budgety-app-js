@@ -161,7 +161,8 @@ var UIController = (function () {
         expensesLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
         container: '.container',
-        expensesPercLabel: ".item__percentage"
+        expensesPercLabel: ".item__percentage",
+        dateLabel: ".budget__title--month"
     }
 
     var formatNumber = function (num, type) {
@@ -182,6 +183,13 @@ var UIController = (function () {
         return (type === 'exp' ? sign = '-' : sign = '+') + ' ' + int + '.' + dec;
 
 
+    };
+
+    // TODO: RESEARCH THIS METHOD MORE AND FIND OUT WHATS GOING ON. FIRST CLASS FUNCTIONS?
+    var nodeListForEach = function (list, callback) {
+        for (var i = 0; i < list.length; i++) {
+            callback(list[i], i);
+        }
     };
 
     // SOME CODE
@@ -211,7 +219,7 @@ var UIController = (function () {
             // CREATE THE NEW PARSED STRING
             parsedHTML = html.replace('%id%', obj.id)
                 .replace('%description%', obj.description)
-                .replace('%value%', formatNumber(obj.value,type));
+                .replace('%value%', formatNumber(obj.value, type));
 
             // INSERT INTO THE DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', parsedHTML);
@@ -226,11 +234,11 @@ var UIController = (function () {
         displayBudget: function (obj) {
 
             var type;
-            obj.budget > 0 ? type = 'inc' : type= 'exp';
+            obj.budget > 0 ? type = 'inc' : type = 'exp';
 
             document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
-            document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc,'inc');
-            document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp,'exp');
+            document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc, 'inc');
+            document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp, 'exp');
             // document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage;
 
             if (obj.percentage > 0) {
@@ -260,13 +268,6 @@ var UIController = (function () {
 
             var fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
 
-            // TODO: RESEARCH THIS METHOD MORE AND FIND OUT WHATS GOING ON. FIRST CLASS FUNCTIONS?
-            var nodeListForEach = function (list, callback) {
-                for (var i = 0; i < list.length; i++) {
-                    callback(list[i], i);
-                }
-            };
-
             nodeListForEach(fields, function (current, index) {
                 if (percentages[index] > 0) {
                     current.textContent = percentages[index] + "%";
@@ -275,6 +276,25 @@ var UIController = (function () {
                 }
             });
 
+
+        },
+        displayMonth: function () {
+
+            var now = new Date();
+            var year = now.getFullYear();
+            var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            var month = now.getMonth();
+            document.querySelector(DOMstrings.dateLabel).textContent = months[month];
+
+        },
+        changedType: function () {
+            var fields = document.querySelectorAll(DOMstrings.inputType + ", " + DOMstrings.inputDescription + ", " + DOMstrings.inputValue);
+
+            nodeListForEach(fields, function (cur) {
+                cur.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMstrings.inputButton).classList.toggle('red');
 
         },
         getDOMStrings: function () {
@@ -305,7 +325,10 @@ var controller = (function (budgetCtrl, UICtrl) {
         });
 
         // DELETE EVENT LISTENER
-        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem)
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+
+        // ON CHANGE EVENT
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
 
     };
 
@@ -410,6 +433,7 @@ var controller = (function (budgetCtrl, UICtrl) {
                 totalExp: 0,
                 percentage: 0
             });
+            UICtrl.displayMonth();
             setupEventListeners();
         }
     }
